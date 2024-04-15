@@ -14,12 +14,13 @@ jobs:
     steps:
       - name: commit messages
         env:
-          COMMIT_MESSAGES: ${{ join(toJson(github.event.commits.*.message)) }}
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
         
         run: echo "$COMMIT_MESSAGES"
 
   simple_deployment_pipeline:
-    if: ${{ github.event_name == 'push' }}
+    if: |
+       ${{ github.event_name == 'push' && !contains(toJson(github.event.commits.*.message), '#skip') }} 
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
